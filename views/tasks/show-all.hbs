@@ -1,0 +1,25 @@
+<form action="/task/add" method="get">
+    <button type="submit">Add a task</button>
+</form>
+
+<h2>List of tasks:</h2>
+
+<div class="list-wrapper">
+    <ol>
+        {{#each tasks}}
+            <li>
+                {{this.task}}
+
+                <form action="/task/{{this._id}}?_method=delete" method="post" class="task-form">
+                    <button type="submit"><img src="graphics/trash.png" alt="trash" class="btn-delete"></button>
+                </form>
+
+                <form action="/task/edit/{{this._id}}" method="get" class="task-form">
+                    <button type="submit"><img src="graphics/edit.png" alt="edit" class="btn-edit"></button>
+                </form>
+
+            </li>
+        {{/each}}
+    </ol>
+</div>
+
