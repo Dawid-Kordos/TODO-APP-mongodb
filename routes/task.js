@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { TodoRecord } = require('../records/todo-record');
-const { DuplicatedTaskError, NotFoundError } = require('../utils/errors');
+const { DuplicatedTaskError, NotFoundError, ValidationError } = require('../utils/errors');
 
 const taskRouter = Router();
 
@@ -21,7 +21,7 @@ taskRouter
       }
     }
 
-    const newTask = new TodoRecord({ task /* done: 'false' */ });
+    const newTask = new TodoRecord({ task });
     await newTask.create();
     res
       .redirect('/task');
@@ -78,6 +78,24 @@ taskRouter
 
     res.render('tasks/forms/edit', {
       task,
+    });
+  })
+
+  .get('/search', async (req, res) => {
+    const { search } = req.query;
+
+    if (!search || search.trim().length < 1) {
+      throw new ValidationError('Search text cannot be empty!');
+    }
+
+    const tasks = (await TodoRecord.getAll()).filter((task) => task.task.toLowerCase().includes(search.toLowerCase()));
+
+    if (!tasks[0]) {
+      throw new ValidationError('There is no task with given text!');
+    }
+
+    res.render('tasks/search', {
+      tasks,
     });
   });
 

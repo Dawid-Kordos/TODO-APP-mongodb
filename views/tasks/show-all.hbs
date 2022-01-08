@@ -4,6 +4,11 @@
 
 <h2>List of tasks:</h2>
 
+<form action="/task/search" method="get">
+    <input type="text" name="search" placeholder="Find a task...">
+    <button type="submit" class="btn-search">Search</button>
+</form>
+
 <div class="list-wrapper">
     <ol>
         {{#each tasks}}
