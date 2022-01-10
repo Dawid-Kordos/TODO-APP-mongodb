@@ -1,13 +1,4 @@
-<p>You are adding a new task: </p>
-
-<form action="/task" method="post">
-    <input type="text" name="task" placeholder="Enter a new task...">
-    <button type="submit"><img src="/graphics/accept.png" alt="accept" class="btn-accept"></button>
-</form>
-
-{{>go-to-main}}
-
-<h2>List of tasks:</h2>
+<h2>Found tasks:</h2>
 
 <div class="table-wrapper">
     <table>
@@ -38,16 +29,16 @@
                 </td>
                 <td>
                     <form action="/task/{{this._id}}?_method=delete" method="post" class="task-form">
-                        <button type="submit"><img src="/graphics/trash.png" alt="trash" class="btn-delete"></button>
+                        <button type="submit"><img src="../graphics/trash.png" alt="trash" class="btn-delete"></button>
                     </form>
                 </td>
                 <td>
                     <form action="/task/edit/{{this._id}}" method="get" class="task-form">
-                        <button type="submit"><img src="/graphics/edit.png" alt="edit" class="btn-edit"></button>
+                        <button type="submit"><img src="../graphics/edit.png" alt="edit" class="btn-edit"></button>
                     </form>
                 </td>
                 <td>
-                    {{#if task.status}}
+                    {{#if this.status}}
                         DONE
                     {{else}}
                         NOT DONE
@@ -61,3 +52,5 @@
         </tbody>
     </table>
 </div>
+
+{{>go-to-main}}

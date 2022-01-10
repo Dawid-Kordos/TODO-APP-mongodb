@@ -12,72 +12,58 @@ taskRouter
   })
 
   .post('/', async (req, res) => {
-    const { task } = req.body;
+    const task = new TodoRecord(req.body);
     const allTasks = await TodoRecord.getAll();
 
     for (const item of allTasks) {
-      if (item.task.toLowerCase() === task.toLowerCase()) {
+      if (item.task.toLowerCase() === req.body.task.toLowerCase()) {
         throw new DuplicatedTaskError();
       }
     }
 
-    const newTask = new TodoRecord({ task });
-    await newTask.create();
-    res
-      .redirect('/task');
+    await task.create();
+
+    res.redirect('/task');
   })
 
   .put('/:id', async (req, res) => {
-    const { task } = req.body;
-    const { id } = req.params;
-
-    const updatedTask = await TodoRecord.getOne(id);
+    const task = await TodoRecord.getOne(req.params.id);
     const allTasks = await TodoRecord.getAll();
+    const { status, dueDate } = req.body;
 
-    if (!updatedTask) {
+    if (!task) {
       throw new NotFoundError();
     }
 
-    for (const item of allTasks) {
-      if (item.task.toLowerCase() === task.toLowerCase()) {
+    for (const item of allTasks.filter((obj) => obj.id !== task.id)) {
+      if (item.task.toLowerCase() === req.body.task.toLowerCase()) {
         throw new DuplicatedTaskError();
       }
     }
 
-    updatedTask.task = task;
-    await updatedTask.update();
+    task.task = req.body.task;
+    task.status = status === 'done' ? 'done' : '';
+    task.dueDate = dueDate;
+    await task.update();
+
     res.redirect('/task');
   })
 
   .delete('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const task = await TodoRecord.getOne(id);
+    const task = await TodoRecord.getOne(req.params.id);
 
     if (!task) {
       throw new NotFoundError();
     }
 
     await task.delete();
+
     res.redirect('/task');
   })
 
   .get('/add', async (req, res) => {
     res.render('tasks/forms/add', {
       tasks: await TodoRecord.getAll(),
-    });
-  })
-
-  .get('/edit/:id', async (req, res) => {
-    const { id } = req.params;
-    const task = await TodoRecord.getOne(id);
-
-    if (!task) {
-      throw new NotFoundError();
-    }
-
-    res.render('tasks/forms/edit', {
-      task,
     });
   })
 
@@ -88,14 +74,26 @@ taskRouter
       throw new ValidationError('Search text cannot be empty!');
     }
 
-    const tasks = (await TodoRecord.getAll()).filter((task) => task.task.toLowerCase().includes(search.toLowerCase()));
+    const tasks = (await TodoRecord.getAll()).filter((task) => task.task.toLowerCase().includes(search.toLowerCase().trim()));
 
     if (!tasks[0]) {
       throw new ValidationError('There is no task with given text!');
     }
 
-    res.render('tasks/search', {
+    res.render('tasks/forms/search', {
       tasks,
+    });
+  })
+
+  .get('/edit/:id', async (req, res) => {
+    const task = await TodoRecord.getOne(req.params.id);
+
+    if (!task) {
+      throw new NotFoundError();
+    }
+
+    res.render('tasks/forms/edit', {
+      task,
     });
   });
 

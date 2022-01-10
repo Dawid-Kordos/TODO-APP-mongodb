@@ -4,18 +4,21 @@ const { ValidationError } = require('../utils/errors');
 
 class TodoRecord {
   constructor(obj) {
-    const { _id, task, done } = obj;
+    const {
+      _id, task, status, dueDate,
+    } = obj;
 
     this._id = _id;
     this.task = task;
-    this.done = done;
+    this.status = status;
+    this.dueDate = dueDate;
 
     this._validate();
   }
 
   _validate() {
-    if (!this.task || typeof this.task !== 'string' || this.task.length < 3) {
-      throw new ValidationError('Task must have at least 3 characters and be a text!');
+    if (!this.task || typeof this.task !== 'string' || this.task.trim().length < 3 || this.task.length > 40) {
+      throw new ValidationError('Task must have at least 3 and at most 40 characters!');
     }
   }
 
@@ -23,7 +26,8 @@ class TodoRecord {
     const { insertedId } = await todos.insertOne({
       _id: this._id,
       task: String(this.task),
-      done: false,
+      status: '',
+      dueDate: 'yyyy-mm-dd',
     });
 
     this._id = insertedId;
@@ -44,7 +48,7 @@ class TodoRecord {
 
     await todos.replaceOne(
       { _id: this._id },
-      { task: String(this.task), done: this.done },
+      { task: String(this.task), status: this.status, dueDate: this.dueDate },
     );
   }
 

@@ -26,4 +26,4 @@ app.set('view engine', '.hbs');
 
 app.use(handleError);
 
-app.listen(3000, () => console.log('Server is listenning on port 3000...'));
+app.listen(3000, () => console.log('Server is listening on port 3000...'));

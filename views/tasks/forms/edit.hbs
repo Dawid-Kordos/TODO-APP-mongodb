@@ -1,7 +1,72 @@
-<p>You are editing task: "{{task.task}}"</p>
-<form action="/task/{{task._id}}?_method=put" method="post">
-    <input type="text" name="task" value="{{task.task}}">
-    <button type="submit"><img src="/graphics/accept.png" alt="accept" class="btn-accept"></button>
+<h2>Selected task:</h2>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+        <tr>
+            <th>
+                Task
+            </th>
+            <th>
+                Delete
+            </th>
+            <th>
+                Modify
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Due date
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                {{task.task}}
+            </td>
+            <td>
+                <form action="/task/{{task._id}}?_method=delete" method="post" class="task-form">
+                    <button type="submit"><img src="/graphics/trash.png" alt="trash" class="btn-delete"></button>
+                </form>
+            </td>
+            <td>
+                <form action="/task/edit/{{task._id}}" method="get" class="task-form">
+                    <button type="submit"><img src="/graphics/edit.png" alt="edit" class="btn-edit"></button>
+                </form>
+            </td>
+            <td>
+                {{#if task.status}}
+                    DONE
+                {{else}}
+                    NOT DONE
+                {{/if}}
+            </td>
+            <td>
+                {{task.dueDate}}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<form action="/task/{{task._id}}?_method=put" method="post" class="task-form">
+    <label for="">Task:
+        <input type="text" name="task" value="{{task.task}}">
+    </label>
+    <label for="">Status:
+        <select name="status" id="">
+            <option value="{{task.status}}"></option>
+            <option value="not done">not done</option>
+            <option value="done">done</option>
+        </select>
+    </label>
+    <label for="">Due date:
+        <input type="date" name="dueDate" value="{{task.dueDate}}">
+    </label>
+    <button type="submit" class="btn-search">Submit</button>
 </form>
 
 {{>go-to-main}}
+
